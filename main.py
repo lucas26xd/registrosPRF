@@ -25,37 +25,28 @@ def import_bases():
         dfPessoas.to_csv('./Bases Limpas/dfPessoas.csv', index=False)
     return dfOcorrencias, dfPessoas
 
+
 def calc_intervalo_meses_ano(df, months, years):
     months_ = months
     list_months = ['Hi!'] * len(years)
     cont = 0
     i = 0
-    for y in years: 
-        #st.write(y)
+    for y in years:
         months_ = months_[cont:]
         cont = 0
-        #st.write("months_")
-        #st.write(months_)    
-        for m in months_: 
-            #st.write(m)
-            cont= cont+1
+        for m in months_:
+            cont += 1
             if m == 'December':
                 break
         list_months[i] = months_[0:cont]
-        i = i+1
-        #st.write("list_months")
-        #st.write(list_months)    
+        i += 1
     
     i = 0
     df_ = df[(df['Ano'].isin([years[i]])) & (df['Mês'].isin(list_months[i]))]
-    #st.write(years[i])
-    #st.write(df_)
-    if len(years)>1:
+    if len(years) > 1:
         for y in years[1:]:
-            i = i+1
+            i += 1
             df_1 = df[(df['Ano'].isin([y])) & (df['Mês'].isin(list_months[i]))]
-            #st.write(y)
-            #st.write(df_1)
             frames = [df_, df_1]
             df_ = pd.concat(frames)
     
@@ -85,16 +76,16 @@ elif app_mode == 'Predições Idade':
     st.write('- Idoso: Pessoa com idade superior a **60** anos')
 
     range_dates = [f'{mes + 1:0>2}/{2017 + ano}' for ano in range(5) for mes in range(12)]
-    start_date, end_date = st.sidebar.select_slider('Intervalo de datas', options=range_dates, value=('01/2020', '12/2020'))
+    start_date, end_date = st.sidebar.select_slider('Intervalo de datas', options=range_dates, value=('01/2020', '03/2021'))
 
     options_qtd = ['Acidentes', 'Envolvidos', 'Ilesos', 'Feridos Leves', 'Feridos Graves', 'Mortos']
-    qtds = st.sidebar.multiselect('Quantidade', options=options_qtd, default=['Envolvidos'])
+    qtds = st.sidebar.selectbox('Quantidade', options=options_qtd, index=1)
 
     ppi = PredicoesPessoasIdade(dfPessoas)
     df_predicts, df = ppi.predicts()
 
     # Pegando apenas as conlunas requisitadas
-    df = df[(ppi.x + qtds)]
+    df = df[(ppi.x + [qtds])]
 
     # Pegando apenas as datas requisitadas
     start_year = int(start_date[3:])
@@ -111,8 +102,8 @@ elif app_mode == 'Predições Idade':
     for m in range(qtd_months):
         months.append(f'{ppi.month_names[(start_month + m - 1) % 12]}')
 
-    df = df[(df['Ano'].isin(years)) & (df['Mês'].isin(months))]
-    #ISSUE: Pegar apenas o conjunto de meses correspondentes de cada ano e não apenas o ISIN no DF
+    # df = df[(df['Ano'].isin(years)) & (df['Mês'].isin(months))]
+    df = calc_intervalo_meses_ano(df, months, years)
 
     #Ordenando
     sorterIndex = dict(zip(ppi.month_names, range(len(ppi.month_names))))
@@ -123,10 +114,9 @@ elif app_mode == 'Predições Idade':
     st.write(df)
 
     # Plotagem
-    # ISSUE: Utilizar também os qtds especificados não só 'Envolvidos'
-    st.write(ppi.create_plot(df, 'Envolvidos', 'Quantidades por Mês/Ano em cada Faixa Etária'))
-
-
+    fig = ppi.create_plot(df, qtds, 'Quantidades por Mês/Ano em cada Faixa Etária')
+    # fig.update_layout(width=1000, height=800)
+    st.write(fig)
 elif app_mode == 'Predições por Causas de Acidentes':
     st.sidebar.title('Predições por Causas de Acidentes')
 

@@ -76,10 +76,10 @@ class PredicoesPessoasIdade():
 
         previsoes = pd.DataFrame(previsoes)
         previsoes.columns = self.y
+        for c in previsoes.columns:
+            previsoes[c] = previsoes[c].astype(int)
 
         previsoes = pd.concat([self.df_new, previsoes], axis=1)
-        # for mes in self.month_names:
-        #     previsoes.loc[previsoes['Mês'] == mes, 'Mês'] = self.month_names.index(mes) + 1
 
         return previsoes, pd.concat([self.df, previsoes])
 
