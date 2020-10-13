@@ -1,4 +1,3 @@
-import streamlit as st
 from os.path import exists
 from scrub import *
 from predicoes import *
@@ -26,8 +25,8 @@ def import_bases():
 
 
 st.title('Dados abertos sobre Acidentes da Polícia Rodoviária Federal a partir da aplicação do processo OSEMN')
-st.sidebar.title('Sobre o trabalho:')
-app_mode = st.sidebar.selectbox('Capítulo', ['Introdução', 'Desempenho dos regressores', 'Predições por Faixa Etária', 'Predições por Causas de Acidentes'])
+st.sidebar.title('Etapas trabalho')
+app_mode = st.sidebar.selectbox('Escolha a etapa:', ['Introdução', 'Desempenho dos regressores', 'Predições por Faixa Etária', 'Predições por Causas de Acidentes'])
 
 dfOcorrencias, dfPessoas = import_bases()
 
@@ -85,3 +84,5 @@ elif app_mode == 'Predições por Causas de Acidentes':
     fig = pred.create_plot(df, 'Causas de Acidentes', 'Quantidades por Mês/Ano em cada Causa de Acidentes')
     fig.update_layout(width=1000, height=800)
     st.write(fig)
+
+st.sidebar.image(Image.open('./Imagens/logo_ufc.png'), width=100)
