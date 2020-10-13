@@ -1,9 +1,8 @@
-import pandas as pd
 import streamlit as st
 from os.path import exists
 from scrub import *
-from model import *
 from predicoes import *
+from introducao import *
 
 
 # @st.cache
@@ -55,18 +54,14 @@ def calc_intervalo_meses_ano(df, months, years):
 
 st.title('Dados abertos sobre Acidentes da Polícia Rodoviária Federal a partir da aplicação do processo OSEMN')
 st.sidebar.title('Sobre o trabalho:')
-app_mode = st.sidebar.selectbox('Capítulo', ['Predições Idade', 'Introdução', 'Titulo 1', 'Predições por Causas de Acidentes', 'Titulo 3', 'Titulo 4'])
+app_mode = st.sidebar.selectbox('Capítulo', ['Introdução', 'Desempenho dos regressores', 'Predições por Faixa Etária', 'Predições por Causas de Acidentes'])
 
 dfOcorrencias, dfPessoas = import_bases()
 
 if app_mode == 'Introdução':
-    st.markdown('# **Introdução**')
-    st.write('''Olá mundo!''')
-
-    H3P = Hipotese3Pessoas(dfPessoas)
-    st.write(H3P.regressoes())
-elif app_mode == 'Titulo 1':
-    st.header('Análise Estatística')
+    Introducao()
+elif app_mode == 'Desempenho dos regressores':
+    pass
 elif app_mode == 'Predições Idade':
     st.sidebar.title('Predições por mes/ano em cada faixa etária')
     st.write('### Legenda das Faixas Etárias:')
