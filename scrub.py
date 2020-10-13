@@ -1,9 +1,8 @@
 import pandas as pd
 
-url = 'https://raw.githubusercontent.com/lucas26xd/registrosPRF/master/Bases'
-bases = {'Ocorrencias': {'folder': 'Agrupados%20por%20ocorrencia',
+bases = {'Ocorrencias': {'folder': 'Agrupados por ocorrencia',
                          'files': ['datatran2017.csv', 'datatran2018.csv', 'datatran2019.csv', 'datatran2020.csv']},
-         'Pessoas': {'folder': 'Agrupados%20por%20pessoa',
+         'Pessoas': {'folder': 'Agrupados por pessoa',
                      'files': ['acidentes2017.csv', 'acidentes2018.csv', 'acidentes2019.csv', 'acidentes2020.csv']},
          }
 
@@ -11,7 +10,7 @@ bases = {'Ocorrencias': {'folder': 'Agrupados%20por%20ocorrencia',
 def import_base(base):
     dfs = list()
     for file in bases[base]['files']:
-        dfs.append(pd.read_csv(f'{url}/{bases[base]["folder"]}/{file}', encoding='ISO-8859-1', sep=';'))
+        dfs.append(pd.read_csv(f'./Bases/{bases[base]["folder"]}/{file}', encoding='ISO-8859-1', sep=';'))
 
     return pd.concat(dfs)
 
@@ -31,8 +30,7 @@ def scrub_ocorrencias():
     dfOcorrencias = import_base('Ocorrencias')
 
     # Remoção de atributos considerados irrelevantes
-    dfOcorrencias = dfOcorrencias.drop(columns=['fase_dia', 'sentido_via', 'uso_solo', 'latitude', 'longitude',
-                                                'regional', 'delegacia', 'uop'])
+    dfOcorrencias = dfOcorrencias.drop(columns=['fase_dia', 'sentido_via', 'uso_solo', 'latitude', 'longitude', 'regional', 'delegacia', 'uop'])
 
     #
     # e regitros NaN nos atributos br e km
@@ -56,9 +54,10 @@ def scrub_ocorrencias():
 def scrub_pessoas():
     dfPessoas = import_base('Pessoas')
 
+    print(dfPessoas)
     # Remoção de atributos considerados irrelevantes
-    dfPessoas = dfPessoas.drop(columns=['fase_dia', 'sentido_via', 'uso_solo', 'id_veiculo', 'marca', 'delegacia',
-                                        'ano_fabricacao_veiculo', 'latitude', 'longitude', 'regional', 'uop'])
+    delete_columns = ['fase_dia', 'sentido_via', 'uso_solo', 'id_veiculo', 'ano_fabricacao_veiculo', 'latitude', 'longitude', 'regional', 'marca', 'delegacia', 'uop']
+    dfPessoas = dfPessoas.drop(columns=delete_columns)
 
     # Remove regitros NaN nos atributos br e km
     t = len(dfPessoas.id)
@@ -82,6 +81,7 @@ def scrub_pessoas():
     # Preenchendo idades faltantes ou outliers com a média dos valores válidos
     media_idade = dfPessoas.loc[dfPessoas['idade'] <= 110, 'idade'].mean()
     dfPessoas.loc[(dfPessoas['idade'].isna()) | (dfPessoas['idade'] > 110), 'idade'] = media_idade
+    dfPessoas.loc[dfPessoas['idade'] < 0, 'idade'] = 0
     dfPessoas['idade'] = dfPessoas['idade'].astype(int)
 
     return dfPessoas
