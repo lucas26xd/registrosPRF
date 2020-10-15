@@ -77,5 +77,5 @@ class Introducao():
         st.markdown('- Hugo Sousa')
         st.markdown('- Kamila Gomes')
         st.markdown('- Lucas Costa')
-        st.markdown('- Lucinaria Fernandes')
+        st.markdown('- Lucinara Fernandes')
         st.markdown('- Thaís Félix')
