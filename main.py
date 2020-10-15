@@ -2,6 +2,7 @@ from os.path import exists
 from scrub import *
 from predicoes import *
 from introducao import *
+from model import *
 
 
 # @st.cache
@@ -33,7 +34,18 @@ dfOcorrencias, dfPessoas = import_bases()
 if app_mode == 'Introdução':
     Introducao()
 elif app_mode == 'Desempenho dos regressores':
-    pass
+    div1 = Hipotese1Pessoas(dfPessoas)
+    df1 = div1.regressoes()
+    df2 = div1.regressoes2()
+
+    Gidade(df1, df2)
+
+    div2 = Hipotese3Ocorrencias(dfOcorrencias)
+    df3 = div2.regressoes()
+    df4 = div2.regressoes2()
+
+    Gcausa(df3, df4)
+
 elif app_mode == 'Predições por Faixa Etária':
     st.sidebar.title('Predições por mes/ano em cada faixa etária')
     st.write('### Legenda das Faixas Etárias:')
