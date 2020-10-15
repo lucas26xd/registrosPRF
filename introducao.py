@@ -30,8 +30,8 @@ class Introducao():
 
     def __agg_ocorrencias(self):
         st.markdown('## **Agrupados por Ocorrências**')
-        options = st.selectbox('Selecione a opção desejada a cerca das informações sobre a Base Ocorrências.',
-                               ['', 'Atributos de Ocorrências', 'Quantidade de Registros de Ocorrências'])
+        options = st.selectbox('Selecione a opção desejada acerca das informações sobre a Base Ocorrências.',
+                               ['Atributos de Ocorrências', 'Quantidade de Registros de Ocorrências'])
 
         if options == 'Atributos de Ocorrências':
             table_dfOcorrencias = pd.DataFrame({
@@ -51,8 +51,8 @@ class Introducao():
 
     def __agg_pessoas(self):
         st.markdown('## **Agrupados por Pessoas**')
-        optionPessoas = st.selectbox('Selecione a opção desejada a cerca das informações sobre a Base Pessoas.',
-                                     ['', 'Atributos de Pessoas', 'Quantidade de Registros de Pessoas'])
+        optionPessoas = st.selectbox('Selecione a opção desejada acerca das informações sobre a Base Pessoas.',
+                                     ['Atributos de Pessoas', 'Quantidade de Registros de Pessoas'])
 
         if optionPessoas == 'Atributos de Pessoas':
             table_dfPessoas = pd.DataFrame({

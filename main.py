@@ -34,17 +34,30 @@ dfOcorrencias, dfPessoas = import_bases()
 if app_mode == 'Introdução':
     Introducao()
 elif app_mode == 'Desempenho dos regressores':
-    div1 = Hipotese1Pessoas(dfPessoas)
-    df1 = div1.regressoes()
-    df2 = div1.regressoes2()
+    H1P = Hipotese1Pessoas(dfPessoas)
+    graphs = H1P.regressions()
 
-    Gidade(df1, df2)
+    options = st.selectbox('Confira os Gráficos:', ['Scores de TREINO/TESTE (Mês, Ano, Faixa Etária)',
+                                                    'Erro Médio Absoluto (Mês, Ano, Faixa Etária)'])
+    if options == 'Scores de TREINO/TESTE (Mês, Ano, Faixa Etária)':
+        st.write('Scores de TREINO/TESTE dos regressores na base de pessoas agrupadas (Mês, Ano, Faixa Etária).')
+        st.write(graphs[0])
+    elif options == 'Erro Médio Absoluto (Mês, Ano, Faixa Etária)':
+        st.write('ERRO MÉDIO ABSOLUTO dos regressores na base de pessoas agrupadas (Mês, Ano, Faixa Etária).')
+        st.write(graphs[1])
 
-    div2 = Hipotese3Ocorrencias(dfOcorrencias)
-    df3 = div2.regressoes()
-    df4 = div2.regressoes2()
+    H3O = Hipotese3Ocorrencias(dfOcorrencias)
+    graphs = H3O.regressions()
 
-    Gcausa(df3, df4)
+    options = st.selectbox('Confira os Gráficos:', ['Scores de TREINO/TESTE (Mês, Ano, Causa Acidente)',
+                                                    'Erro Médio Absoluto (Mês, Ano, Causa Acidente)'])
+    if options == 'Scores de TREINO/TESTE (Mês, Ano, Causa Acidente)':
+        st.write(
+            'Scores de TREINO/TESTE dos regressores na base de pessoas agrupadas (Mês, Ano, Causa Acidente).')
+        st.write(graphs[0])
+    elif options == 'Erro Médio Absoluto (Mês, Ano, Causa Acidente)':
+        st.write('ERRO MÉDIO ABSOLUTO dos regressores na base de pessoas agrupadas (Mês, Ano, Causa Acidente).')
+        st.write(graphs[1])
 
 elif app_mode == 'Predições por Faixa Etária':
     st.sidebar.title('Predições por mes/ano em cada faixa etária')
