@@ -5,7 +5,7 @@ import streamlit as st
 from sklearn.ensemble import RandomForestRegressor
 
 
-class Predicoes():
+class Predicoes:
     def __init__(self, options):
         self.month_names_missing = ['July', 'August', 'September', 'October', 'November', 'December']
         self.month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
@@ -93,10 +93,10 @@ class Predicoes():
         return pd.concat([df, previsoes])
 
 
-class PredicoesPessoasIdade():
-    def __init__(self, pred, dfPessoas):
+class PredicoesPessoasIdade(Predicoes):
+    def __init__(self, dfPessoas, options):
+        super().__init__(options)
         self.x = ['Mês', 'Ano', 'Faixa Etária']
-        self.pred = pred
 
         dfPessoas['data_inversa'] = pd.to_datetime(dfPessoas['data_inversa'])
         self.df = dfPessoas.copy()
@@ -113,16 +113,16 @@ class PredicoesPessoasIdade():
         self.df = self.df.groupby([self.df['data_inversa'].dt.strftime('%B'), self.df['data_inversa'].dt.strftime('%Y'), 'idade'])
         self.df = self.df.agg({'id': 'nunique', 'pesid': 'count', 'ilesos': 'sum', 'feridos_leves': 'sum', 'feridos_graves': 'sum', 'mortos': 'sum'})
         self.df.index.names = self.x
-        self.df.columns = self.pred.y
+        self.df.columns = self.y
         self.df = self.df.reset_index()
 
     def __agg_new_data(self):
         faixa_etaria_unique = self.df['Faixa Etária'].unique().tolist()
 
-        mesh = np.array(np.meshgrid(self.pred.month_names_missing, ['2020'], faixa_etaria_unique)).T.reshape(-1, 3)
+        mesh = np.array(np.meshgrid(self.month_names_missing, ['2020'], faixa_etaria_unique)).T.reshape(-1, 3)
         df_new2020 = pd.DataFrame(mesh, columns=['Mês', 'Ano', 'Faixa Etária'])
 
-        mesh = np.array(np.meshgrid(self.pred.month_names, ['2021'], faixa_etaria_unique)).T.reshape(-1, 3)
+        mesh = np.array(np.meshgrid(self.month_names, ['2021'], faixa_etaria_unique)).T.reshape(-1, 3)
         df_new2021 = pd.DataFrame(mesh, columns=['Mês', 'Ano', 'Faixa Etária'])
 
         self.df_new = pd.concat([df_new2020, df_new2021])
@@ -131,8 +131,8 @@ class PredicoesPessoasIdade():
         self.df_concatenated = pd.concat([self.df, self.df_new])
 
         # Encode meses
-        for month in self.pred.month_names:
-            self.df_concatenated.loc[self.df_concatenated['Mês'] == month, 'Mês'] = self.pred.month_names.index(month) + 1
+        for month in self.month_names:
+            self.df_concatenated.loc[self.df_concatenated['Mês'] == month, 'Mês'] = self.month_names.index(month) + 1
 
         # Encode faixa etaria
         for faixa in faixa_etaria_unique:
@@ -144,13 +144,13 @@ class PredicoesPessoasIdade():
         X_train = self.df_concatenated[:len(self.df)][self.x]
         X_test = self.df_concatenated[len(self.df):][self.x]
 
-        return self.pred.predict(self.df, self.df_new, X_train, X_test)
+        return self.predict(self.df, self.df_new, X_train, X_test)
 
 
-class PredicoesOcorrenciasCausasAcidentes():
-    def __init__(self, pred, dfOcorrencias):
+class PredicoesOcorrenciasCausasAcidentes(Predicoes):
+    def __init__(self, dfOcorrencias, options):
+        super().__init__(options)
         self.x = ['Mês', 'Ano', 'Causas de Acidentes']
-        self.pred = pred
 
         dfOcorrencias['data_inversa'] = pd.to_datetime(dfOcorrencias['data_inversa'])
         self.df = dfOcorrencias.copy()
@@ -162,16 +162,16 @@ class PredicoesOcorrenciasCausasAcidentes():
         self.df = self.df.groupby([self.df['data_inversa'].dt.strftime('%B'), self.df['data_inversa'].dt.strftime('%Y'), 'causa_acidente'])
         self.df = self.df.agg({'id': 'nunique', 'ilesos': 'sum', 'feridos_leves': 'sum', 'feridos_graves': 'sum', 'mortos': 'sum', 'feridos': 'sum', 'veiculos': 'sum'})
         self.df.index.names = self.x
-        self.df.columns = self.pred.y
+        self.df.columns = self.y
         self.df = self.df.reset_index()
 
     def __agg_new_data(self):
         causa_acidente_unique = self.df['Causas de Acidentes'].unique().tolist()
 
-        mesh = np.array(np.meshgrid(self.pred.month_names_missing, ['2020'], causa_acidente_unique)).T.reshape(-1, 3)
+        mesh = np.array(np.meshgrid(self.month_names_missing, ['2020'], causa_acidente_unique)).T.reshape(-1, 3)
         df_new2020 = pd.DataFrame(mesh, columns=['Mês', 'Ano', 'Causas de Acidentes'])
 
-        mesh = np.array(np.meshgrid(self.pred.month_names, ['2021'], causa_acidente_unique)).T.reshape(-1, 3)
+        mesh = np.array(np.meshgrid(self.month_names, ['2021'], causa_acidente_unique)).T.reshape(-1, 3)
         df_new2021 = pd.DataFrame(mesh, columns=['Mês', 'Ano', 'Causas de Acidentes'])
 
         self.df_new = pd.concat([df_new2020, df_new2021])
@@ -180,8 +180,8 @@ class PredicoesOcorrenciasCausasAcidentes():
         self.df_concatenated = pd.concat([self.df, self.df_new])
 
         # Encode meses
-        for month in self.pred.month_names:
-            self.df_concatenated.loc[self.df_concatenated['Mês'] == month, 'Mês'] = self.pred.month_names.index(month) + 1
+        for month in self.month_names:
+            self.df_concatenated.loc[self.df_concatenated['Mês'] == month, 'Mês'] = self.month_names.index(month) + 1
 
         # Encode causa acidentes
         for causa in causa_acidente_unique:
@@ -193,4 +193,4 @@ class PredicoesOcorrenciasCausasAcidentes():
         X_train = self.df_concatenated[:len(self.df)][self.x]
         X_test = self.df_concatenated[len(self.df):][self.x]
 
-        return self.pred.predict(self.df, self.df_new, X_train, X_test)
+        return self.predict(self.df, self.df_new, X_train, X_test)

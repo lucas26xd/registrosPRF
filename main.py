@@ -33,6 +33,7 @@ dfOcorrencias, dfPessoas = import_bases()
 
 if app_mode == 'Introdução':
     Introducao()
+
 elif app_mode == 'Desempenho dos regressores':
     H1P = Hipotese1Pessoas(dfPessoas)
     graphs = H1P.regressions()
@@ -67,46 +68,42 @@ elif app_mode == 'Predições por Faixa Etária':
     st.write('- Adulto: Pessoa com idade entre **24** e **60** anos')
     st.write('- Idoso: Pessoa com idade superior a **60** anos')
 
-    pred = Predicoes(['Acidentes', 'Envolvidos', 'Ilesos', 'Feridos Leves', 'Feridos Graves', 'Mortos'])
-
-    ppi = PredicoesPessoasIdade(pred, dfPessoas)
+    ppi = PredicoesPessoasIdade(dfPessoas, ['Acidentes', 'Envolvidos', 'Ilesos', 'Feridos Leves', 'Feridos Graves', 'Mortos'])
     df = ppi.predicts()
 
     # Pegando apenas as conlunas requisitadas
-    df = df[(ppi.x + [pred.qtds])]
+    df = df[(ppi.x + [ppi.qtds])]
 
     # Pegando apenas as datas requisitadas
-    df = pred.filter_dates(df)
+    df = ppi.filter_dates(df)
 
     #Ordenando
-    df = pred.sort(df)
+    df = ppi.sort(df)
 
     st.write(df)
 
     # Plotagem
-    fig = pred.create_plot(df, 'Faixa Etária', 'Quantidades por Mês/Ano em cada Faixa Etária')
+    fig = ppi.create_plot(df, 'Faixa Etária', 'Quantidades por Mês/Ano em cada Faixa Etária')
     st.write(fig)
 elif app_mode == 'Predições por Causas de Acidentes':
     st.sidebar.title('Predições por Causas de Acidentes')
 
-    pred = Predicoes(['Acidentes', 'Ilesos', 'Feridos Leves', 'Feridos Graves', 'Mortos', 'Feridos', 'Veículos'])
-
-    poca = PredicoesOcorrenciasCausasAcidentes(pred, dfOcorrencias)
+    poca = PredicoesOcorrenciasCausasAcidentes(dfOcorrencias, ['Acidentes', 'Ilesos', 'Feridos Leves', 'Feridos Graves', 'Mortos', 'Feridos', 'Veículos'])
     df = poca.predicts()
 
     # Pegando apenas as conlunas requisitadas
-    df = df[(poca.x + [pred.qtds])]
+    df = df[(poca.x + [poca.qtds])]
 
     # Pegando apenas as datas requisitadas
-    df = pred.filter_dates(df)
+    df = poca.filter_dates(df)
 
     # Ordenando
-    df = pred.sort(df)
+    df = poca.sort(df)
 
     st.write(df)
 
     #Plotagem
-    fig = pred.create_plot(df, 'Causas de Acidentes', 'Quantidades por Mês/Ano em cada Causa de Acidentes')
+    fig = poca.create_plot(df, 'Causas de Acidentes', 'Quantidades por Mês/Ano em cada Causa de Acidentes')
     fig.update_layout(width=1000, height=800)
     st.write(fig)
 
